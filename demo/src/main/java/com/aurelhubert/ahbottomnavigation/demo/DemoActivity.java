@@ -3,6 +3,7 @@ package com.aurelhubert.ahbottomnavigation.demo;
 import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -79,6 +80,8 @@ public class DemoActivity extends AppCompatActivity {
 
 		bottomNavigation.manageFloatingActionButtonBehavior(floatingActionButton);
 		bottomNavigation.setTranslucentNavigationEnabled(true);
+		//bottomNavigation.setDefaultBackgroundColor(Color.WHITE); // has shadow
+		bottomNavigation.setDefaultBackgroundColor(Color.RED); // no shadow
 
 		bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
 			@Override
