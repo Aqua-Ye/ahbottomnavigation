@@ -36,6 +36,7 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.aurelhubert.ahbottomnavigation.notification.AHNotification;
@@ -78,8 +79,10 @@ public class AHBottomNavigation extends FrameLayout {
 	private ArrayList<AHBottomNavigationItem> items = new ArrayList<>();
 	private ArrayList<View> views = new ArrayList<>();
 	private AHBottomNavigationBehavior<AHBottomNavigation> bottomNavigationBehavior;
+	private LinearLayout layoutContainer;
 	private LinearLayout linearLayoutContainer;
 	private View backgroundColorView;
+	private View shadowView;
 	private Animator circleRevealAnim;
 	private boolean colored = false;
 	private boolean selectedBackgroundVisible = false;
@@ -104,7 +107,7 @@ public class AHBottomNavigation extends FrameLayout {
 	private @ColorInt int coloredTitleColorActive;
 	private @ColorInt int coloredTitleColorInactive;
 	private float titleActiveTextSize, titleInactiveTextSize;
-	private int bottomNavigationHeight, navigationBarHeight = 0;
+	private int shadowHeight, bottomNavigationHeight, navigationBarHeight = 0;
 	private float selectedItemWidth, notSelectedItemWidth;
 	private boolean forceTint = false;
 	private TitleState titleState = TitleState.SHOW_WHEN_ACTIVE;
@@ -201,6 +204,7 @@ public class AHBottomNavigation extends FrameLayout {
 		}
 
 		notificationTextColor = ContextCompat.getColor(context, android.R.color.white);
+		shadowHeight = (int) resources.getDimension(R.dimen.bottom_navigation_shadow_height);
 		bottomNavigationHeight = (int) resources.getDimension(R.dimen.bottom_navigation_height);
 
 		// Item colors
@@ -249,12 +253,23 @@ public class AHBottomNavigation extends FrameLayout {
 			bottomNavigationHeight = layoutHeight;
 		}
 
+		layoutContainer = new LinearLayout(context);
+		layoutContainer.setOrientation(LinearLayout.VERTICAL);
+		LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+		layoutParams.gravity = Gravity.BOTTOM;
+		addView(layoutContainer, layoutParams);
+
+		shadowView = new View(context);
+		shadowView.setBackgroundResource(R.drawable.bottom_navigation_top_shadow);
+		RelativeLayout.LayoutParams lp1 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, shadowHeight);
+		layoutContainer.addView(shadowView, lp1);
+
 		linearLayoutContainer = new LinearLayout(context);
 		linearLayoutContainer.setOrientation(LinearLayout.HORIZONTAL);
 		linearLayoutContainer.setGravity(Gravity.CENTER);
 
-		LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, layoutHeight);
-		addView(linearLayoutContainer, layoutParams);
+		RelativeLayout.LayoutParams lp2 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, layoutHeight);
+		layoutContainer.addView(linearLayoutContainer, lp2);
 
 		if (titleState != TitleState.ALWAYS_HIDE &&
 				(items.size() == MIN_ITEMS || titleState == TitleState.ALWAYS_SHOW)) {
@@ -422,14 +437,14 @@ public class AHBottomNavigation extends FrameLayout {
 
 			if (colored) {
 				if (current) {
-					setBackgroundColor(item.getColor(context));
+					linearLayoutContainer.setBackgroundColor(item.getColor(context));
 					currentColor = item.getColor(context);
 				}
 			} else {
 				if (defaultBackgroundResource != 0) {
-					setBackgroundResource(defaultBackgroundResource);
+					linearLayoutContainer.setBackgroundResource(defaultBackgroundResource);
 				} else {
-					setBackgroundColor(defaultBackgroundColor);
+					linearLayoutContainer.setBackgroundColor(defaultBackgroundColor);
 				}
 			}
 
@@ -540,14 +555,14 @@ public class AHBottomNavigation extends FrameLayout {
 
 			if (colored) {
 				if (i == currentItem) {
-					setBackgroundColor(item.getColor(context));
+					linearLayoutContainer.setBackgroundColor(item.getColor(context));
 					currentColor = item.getColor(context);
 				}
 			} else {
 				if (defaultBackgroundResource != 0) {
-					setBackgroundResource(defaultBackgroundResource);
+					linearLayoutContainer.setBackgroundResource(defaultBackgroundResource);
 				} else {
-					setBackgroundColor(defaultBackgroundColor);
+					linearLayoutContainer.setBackgroundColor(defaultBackgroundColor);
 				}
 			}
 
@@ -641,7 +656,7 @@ public class AHBottomNavigation extends FrameLayout {
 
 					if (circleRevealAnim != null && circleRevealAnim.isRunning()) {
 						circleRevealAnim.cancel();
-						setBackgroundColor(items.get(itemIndex).getColor(context));
+						linearLayoutContainer.setBackgroundColor(items.get(itemIndex).getColor(context));
 						backgroundColorView.setBackgroundColor(Color.TRANSPARENT);
 					}
 
@@ -655,7 +670,7 @@ public class AHBottomNavigation extends FrameLayout {
 
 						@Override
 						public void onAnimationEnd(Animator animation) {
-							setBackgroundColor(items.get(itemIndex).getColor(context));
+							linearLayoutContainer.setBackgroundColor(items.get(itemIndex).getColor(context));
 							backgroundColorView.setBackgroundColor(Color.TRANSPARENT);
 						}
 
@@ -673,9 +688,9 @@ public class AHBottomNavigation extends FrameLayout {
 							items.get(itemIndex).getColor(context));
 				} else {
 					if (defaultBackgroundResource != 0) {
-						setBackgroundResource(defaultBackgroundResource);
+						linearLayoutContainer.setBackgroundResource(defaultBackgroundResource);
 					} else {
-						setBackgroundColor(defaultBackgroundColor);
+						linearLayoutContainer.setBackgroundColor(defaultBackgroundColor);
 					}
 					backgroundColorView.setBackgroundColor(Color.TRANSPARENT);
 				}
@@ -701,9 +716,9 @@ public class AHBottomNavigation extends FrameLayout {
 			currentColor = items.get(currentItem).getColor(context);
 		} else if (currentItem == CURRENT_ITEM_NONE) {
 			if (defaultBackgroundResource != 0) {
-				setBackgroundResource(defaultBackgroundResource);
+				linearLayoutContainer.setBackgroundResource(defaultBackgroundResource);
 			} else {
-				setBackgroundColor(defaultBackgroundColor);
+				linearLayoutContainer.setBackgroundColor(defaultBackgroundColor);
 			}
 			backgroundColorView.setBackgroundColor(Color.TRANSPARENT);
 		}
@@ -767,7 +782,7 @@ public class AHBottomNavigation extends FrameLayout {
 
 					if (circleRevealAnim != null && circleRevealAnim.isRunning()) {
 						circleRevealAnim.cancel();
-						setBackgroundColor(items.get(itemIndex).getColor(context));
+						linearLayoutContainer.setBackgroundColor(items.get(itemIndex).getColor(context));
 						backgroundColorView.setBackgroundColor(Color.TRANSPARENT);
 					}
 
@@ -781,7 +796,7 @@ public class AHBottomNavigation extends FrameLayout {
 
 						@Override
 						public void onAnimationEnd(Animator animation) {
-							setBackgroundColor(items.get(itemIndex).getColor(context));
+							linearLayoutContainer.setBackgroundColor(items.get(itemIndex).getColor(context));
 							backgroundColorView.setBackgroundColor(Color.TRANSPARENT);
 						}
 
@@ -799,9 +814,9 @@ public class AHBottomNavigation extends FrameLayout {
 							items.get(itemIndex).getColor(context));
 				} else {
 					if (defaultBackgroundResource != 0) {
-						setBackgroundResource(defaultBackgroundResource);
+						linearLayoutContainer.setBackgroundResource(defaultBackgroundResource);
 					} else {
-						setBackgroundColor(defaultBackgroundColor);
+						linearLayoutContainer.setBackgroundColor(defaultBackgroundColor);
 					}
 					backgroundColorView.setBackgroundColor(Color.TRANSPARENT);
 				}
@@ -834,9 +849,9 @@ public class AHBottomNavigation extends FrameLayout {
 			currentColor = items.get(currentItem).getColor(context);
 		} else if (currentItem == CURRENT_ITEM_NONE) {
 			if (defaultBackgroundResource != 0) {
-				setBackgroundResource(defaultBackgroundResource);
+				linearLayoutContainer.setBackgroundResource(defaultBackgroundResource);
 			} else {
-				setBackgroundColor(defaultBackgroundColor);
+				linearLayoutContainer.setBackgroundColor(defaultBackgroundColor);
 			}
 			backgroundColorView.setBackgroundColor(Color.TRANSPARENT);
 		}
