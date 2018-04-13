@@ -43,7 +43,7 @@ android {
 }
 
 dependencies {
-    compile "com.android.support:design:${project.ANDROID_SUPPORT_LIB_VERSION}"
+    implementation "com.android.support:design:${project.ANDROID_SUPPORT_LIB_VERSION}"
 }
 
 // Place it at the end of the file
