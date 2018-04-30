@@ -25,12 +25,12 @@ ext {
 }
 
 android {
-    compileSdkVersion project.ANDROID_BUILD_SDK_VERSION as int
-    buildToolsVersion project.ANDROID_BUILD_TOOLS_VERSION
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion project.ANDROID_BUILD_TARGET_SDK_VERSION as int
+        targetSdkVersion rootProject.targetSdkVersion
         versionCode 40
         versionName "2.1.0"
     }
@@ -43,7 +43,7 @@ android {
 }
 
 dependencies {
-    implementation "com.android.support:design:${project.ANDROID_SUPPORT_LIB_VERSION}"
+    implementation "com.android.support:design:${rootProject.supportLibraryVersion}"
 }
 
 // Place it at the end of the file
